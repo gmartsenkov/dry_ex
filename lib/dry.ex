@@ -1,18 +1,42 @@
 defmodule Dry do
   @moduledoc """
-  Documentation for `Dry`.
   """
 
-  @doc """
-  Hello world.
+  defmacro __using__(_) do
+    quote do
+      import Dry, only: [schema: 1]
 
-  ## Examples
+      Module.register_attribute(__MODULE__, :attributes, accumulate: true)
+    end
+  end
 
-      iex> Dry.hello()
-      :world
+  defmacro schema([do: block]) do
+    prelude = quote do
+      try do
+        import Dry
+        unquote(block)
+      after
+        :ok
+      end
+    end
 
-  """
-  def hello do
-    :world
+    postlude = quote unquote: false do
+      defstruct @attributes
+
+      def new(attr) do
+        struct(__MODULE__, attr)
+      end
+    end
+
+    quote do
+	    unquote(prelude)
+	    unquote(postlude)
+    end
+  end
+
+  defmacro attribute(name, _type) do
+    quote do
+      Module.put_attribute(__MODULE__, :attributes, unquote(name))
+    end
   end
 end
