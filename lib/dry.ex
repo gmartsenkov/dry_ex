@@ -10,33 +10,59 @@ defmodule Dry do
     end
   end
 
-  defmacro schema([do: block]) do
-    prelude = quote do
-      try do
-        import Dry
-        unquote(block)
-      after
-        :ok
-      end
-    end
+  defmacro schema(do: block) do
+    prelude =
+      quote do
+        try do
+          import Dry
 
-    postlude = quote unquote: false do
-      defstruct @attributes
-
-      def new(attr) do
-        struct(__MODULE__, attr)
+          unquote(block)
+        after
+          :ok
+        end
       end
-    end
+
+    postlude =
+      quote unquote: false do
+        @attributes
+        |> Enum.map(fn attr -> Enum.at(attr, 0) end)
+        |> Kernel.defstruct()
+
+        def __attributes__(), do: @attributes
+
+        def new(attr) do
+          processed =
+            __attributes__()
+            |> Enum.map(fn a -> Dry.Processor.process(a, attr, __MODULE__) end)
+            |> Enum.into(%{})
+
+          struct(__MODULE__, processed)
+        end
+      end
 
     quote do
-	    unquote(prelude)
-	    unquote(postlude)
+      unquote(prelude)
+      unquote(postlude)
     end
   end
 
-  defmacro attribute(name, _type) do
+  defmacro attribute(name, do: block) do
     quote do
-      Module.put_attribute(__MODULE__, :attributes, unquote(name))
+      attribute = [unquote(name), :__func__]
+
+      def unquote(name)(e) do
+        Kernel.var!(entity) = e
+        unquote(block)
+      end
+
+      Module.put_attribute(__MODULE__, :attributes, attribute)
+    end
+  end
+
+  defmacro attribute(name, type \\ nil, opts \\ []) do
+    quote do
+      attribute = [unquote(name), unquote(type), unquote(opts)]
+      Module.put_attribute(__MODULE__, :attributes, attribute)
     end
   end
 end
