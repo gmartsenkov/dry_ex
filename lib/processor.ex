@@ -3,7 +3,7 @@ defmodule Dry.Processor do
     {name, apply(module, name, [attr])}
   end
 
-  def process([name|_rest], attr, _module) do
+  def process([name | _rest], attr, _module) do
     {name, Map.get(attr, name)}
   end
 end
