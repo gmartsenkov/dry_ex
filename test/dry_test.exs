@@ -66,4 +66,27 @@ defmodule DryTest do
       end
     end
   end
+
+  describe "#new" do
+    context "when no error occurs" do
+      it "returns an ok tuple" do
+        {:ok, result} = Test.new(%{name: "Rob", age: 18, height: 169, country: "BG"})
+        assert result == %Test{
+               name: "Rob",
+               age: 18,
+               height: 169,
+               is_adult: true,
+               tall: false,
+               country: "BG"
+             }
+      end
+    end
+
+    context "when an error occurs" do
+      it "returns an error tuple" do
+        {:error, error} = Test.new(%{})
+        assert error == "Required attribute :name is missing"
+      end
+    end
+  end
 end

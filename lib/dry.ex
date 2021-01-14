@@ -39,6 +39,14 @@ defmodule Dry do
 
           struct(__MODULE__, processed)
         end
+
+        def new(attr) do
+          try do
+            {:ok, new!(attr)}
+          rescue
+            e in Dry.Error -> {:error, e.message}
+          end
+        end
       end
 
     quote do
@@ -62,7 +70,7 @@ defmodule Dry do
 
   defmacro attribute(name, type \\ nil, opts \\ []) do
     quote do
-      attribute = [unquote(name) , unquote(type), unquote(opts)]
+      attribute = [unquote(name), unquote(type), unquote(opts)]
       Module.put_attribute(__MODULE__, :attributes, attribute)
     end
   end
