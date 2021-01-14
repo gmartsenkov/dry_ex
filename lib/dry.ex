@@ -30,9 +30,10 @@ defmodule Dry do
 
         def __attributes__(), do: @attributes
 
-        def new(attr) do
+        def new!(attr) do
           processed =
             __attributes__()
+            |> Enum.reverse()
             |> Enum.map(fn a -> Dry.Processor.process(a, attr, __MODULE__) end)
             |> Enum.into(%{})
 
@@ -61,7 +62,7 @@ defmodule Dry do
 
   defmacro attribute(name, type \\ nil, opts \\ []) do
     quote do
-      attribute = [unquote(name), unquote(type), unquote(opts)]
+      attribute = [unquote(name) , unquote(type), unquote(opts)]
       Module.put_attribute(__MODULE__, :attributes, attribute)
     end
   end
