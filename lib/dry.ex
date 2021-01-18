@@ -22,7 +22,18 @@ defmodule Dry do
     end
   end
 
-  User.new!(%{name: "Rob", age: 18, height: 169, country: "BG"})
+  iex> user = User.new!(%{name: "Rob", age: 18, height: 169, country: "BG"})
+  # %User{
+  #   age: 18,
+  #   country: "BG",
+  #   height: 169,
+  #   is_adult: true,
+  #   name: "Rob",
+  #   tall: false
+  # }
+
+  iex> {:ok, user} = User.new(%{name: "Rob", age: 18, height: 169, country: "BG"})
+  ...
   ```
   """
 
