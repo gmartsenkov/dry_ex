@@ -47,7 +47,7 @@ defmodule DryTest do
 
     context "when non-optional attribute is missing" do
       it "raises an exception" do
-        assert_raise Dry.Error, "Required attribute :name is missing", fn ->
+        assert_raise Dry.RuntimeError, "Required attribute :name is missing", fn ->
           Test.new!(%{})
         end
       end

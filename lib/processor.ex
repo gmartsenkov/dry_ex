@@ -1,4 +1,6 @@
 defmodule Dry.Processor do
+  @moduledoc false
+
   def process([name, :__func__], attr, module) do
     {name, apply(module, name, [attr])}
   end
@@ -12,7 +14,7 @@ defmodule Dry.Processor do
   end
 
   def process(name, _type, _value = nil, _default = :__dry_undefined__, _optional = false) do
-    raise Dry.Error, message: "Required attribute :#{name} is missing"
+    raise Dry.RuntimeError, message: "Required attribute :#{name} is missing"
   end
 
   def process(name, _type, value = nil, _default = :__dry_undefined__, _optional = true) do
