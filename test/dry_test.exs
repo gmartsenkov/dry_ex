@@ -1,5 +1,5 @@
 defmodule DryTest do
-  use ExSpec
+  use ExSpec, async: true
 
   doctest Dry
 
@@ -47,9 +47,21 @@ defmodule DryTest do
 
     context "when non-optional attribute is missing" do
       it "raises an exception" do
-        assert_raise Dry.Error, "Required attribute :name is missing", fn ->
-          Test.new!(%{})
-        end
+        assert_raise Dry.Error,
+                     "[Elixir.DryTest.Test] - Required attribute :name is missing",
+                     fn ->
+                       Test.new!(%{})
+                     end
+      end
+    end
+
+    context "when passed attribute is not of the same type" do
+      it "raises an exception" do
+        assert_raise Dry.Error,
+                     "[Elixir.DryTest.Test] - `5` has invalid type for :name. Expected type is string",
+                     fn ->
+                       Test.new!(%{name: 5})
+                     end
       end
     end
 
@@ -71,21 +83,22 @@ defmodule DryTest do
     context "when no error occurs" do
       it "returns an ok tuple" do
         {:ok, result} = Test.new(%{name: "Rob", age: 18, height: 169, country: "BG"})
+
         assert result == %Test{
-               name: "Rob",
-               age: 18,
-               height: 169,
-               is_adult: true,
-               tall: false,
-               country: "BG"
-             }
+                 name: "Rob",
+                 age: 18,
+                 height: 169,
+                 is_adult: true,
+                 tall: false,
+                 country: "BG"
+               }
       end
     end
 
     context "when an error occurs" do
       it "returns an error tuple" do
         {:error, error} = Test.new(%{})
-        assert error == "Required attribute :name is missing"
+        assert error == "[Elixir.DryTest.Test] - Required attribute :name is missing"
       end
     end
   end

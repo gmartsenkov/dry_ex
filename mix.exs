@@ -8,6 +8,7 @@ defmodule Dry.MixProject do
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env()),
       aliases: aliases(),
       description: "Extend elixir structs",
       package: package()
@@ -20,6 +21,10 @@ defmodule Dry.MixProject do
       extra_applications: [:logger]
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
