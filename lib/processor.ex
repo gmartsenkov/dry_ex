@@ -1,4 +1,6 @@
 defmodule Dry.Processor do
+  @moduledoc false
+
   def process([name, :__func__], attr, module) do
     {name, apply(module, name, [attr])}
   end
@@ -7,12 +9,11 @@ defmodule Dry.Processor do
     default = Keyword.get(opts, :default, :__dry_undefined__)
     optional = Keyword.get(opts, :optional, false)
     value = Map.get(attr, name)
-
     process(name, type, value, default, optional, module)
   end
 
   def process(name, _type, _value = nil, _default = :__dry_undefined__, _optional = false, module) do
-    raise Dry.Error, message: "[#{module}] - Required attribute :#{name} is missing"
+    raise Dry.RuntimeError, message: "[#{module}] - Required attribute :#{name} is missing"
   end
 
   def process(name, _type, value = nil, _default = :__dry_undefined__, _optional = true, _module) do
@@ -64,7 +65,7 @@ defmodule Dry.Processor do
   end
 
   defp invalid(name, type, value, module) do
-    raise Dry.Error,
+    raise Dry.RuntimeError,
       message:
         "[#{module}] - `#{inspect(value)}` has invalid type for :#{name}. Expected type is #{type}"
   end
