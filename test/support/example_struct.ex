@@ -1,3 +1,9 @@
 defmodule Dashboard.ExampleStruct do
-  defstruct [:name]
+  @moduledoc false
+
+  use Dry
+
+  schema do
+    attribute(:name, :string)
+  end
 end

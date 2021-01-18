@@ -69,4 +69,8 @@ defmodule Dry.Processor do
       message:
         "[#{module}] - `#{inspect(value)}` has invalid type for :#{name}. Expected type is #{type}"
   end
+
+  def function?(attribute) do
+    Enum.at(attribute, 1, nil) == :__func__
+  end
 end

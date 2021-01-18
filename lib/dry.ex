@@ -63,11 +63,19 @@ defmodule Dry do
         def __attributes__(), do: @attributes
 
         def new!(attr) do
+          attr =
+            __attributes__()
+            |> Enum.reverse()
+            |> Enum.reject(&Dry.Processor.function?/1)
+            |> Enum.map(fn a -> Dry.Processor.process(a, attr, __MODULE__) end)
+            |> Enum.into(%{})
+
           processed =
             __attributes__()
             |> Enum.reverse()
+            |> Enum.filter(&Dry.Processor.function?/1)
             |> Enum.map(fn a -> Dry.Processor.process(a, attr, __MODULE__) end)
-            |> Enum.into(%{})
+            |> Enum.into(attr)
 
           struct(__MODULE__, processed)
         end
@@ -87,6 +95,12 @@ defmodule Dry do
     end
   end
 
+  defmacro attribute(name) do
+    quote do
+      attribute(unquote(name), nil, [])
+    end
+  end
+
   defmacro attribute(name, do: block) do
     quote do
       attribute = [unquote(name), :__func__]
@@ -100,7 +114,33 @@ defmodule Dry do
     end
   end
 
-  defmacro attribute(name, type \\ nil, opts \\ []) do
+  defmacro attribute(name, opts) when is_list(opts) do
+    quote do
+      attribute(unquote(name), nil, unquote(opts))
+    end
+  end
+
+  defmacro attribute(name, type) do
+    quote do
+      attribute(unquote(name), unquote(type), [])
+    end
+  end
+
+  defmacro attribute(name, [] = type, _opts) do
+    quote do
+      attribute(unquote(name), nil, unquote(type))
+    end
+  end
+
+  @doc """
+  Macro to define attribute withing a Dry schema
+  Examples:
+  ```
+  attribute(:age, :integer, optional: true)
+  ```
+  Valid types can be - :atom, :string, :integer, :float, :bool, :map, :atom or a struct
+  """
+  defmacro attribute(name, type, opts) do
     quote do
       attribute = [unquote(name), unquote(type), unquote(opts)]
       Module.put_attribute(__MODULE__, :attributes, attribute)

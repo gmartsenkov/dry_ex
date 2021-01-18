@@ -9,15 +9,15 @@ defmodule DryTest do
     schema do
       attribute(:name, :string)
       attribute(:age, :integer, optional: true)
-      attribute(:height)
+      attribute(:height, default: 190)
       attribute(:country, :string, default: "UK")
 
       attribute :is_adult do
-        Map.get(entity, :age, 0) >= 18
+        (entity.age || 0) >= 18
       end
 
       attribute :tall do
-        Map.get(entity, :height, 0) > 180
+        (entity.height || 0) > 180
       end
     end
   end
@@ -35,7 +35,7 @@ defmodule DryTest do
     end
 
     it "works when a default is set" do
-      assert Test.new!(%{name: "Bob", age: 5, height: 190}) == %Test{
+      assert Test.new!(%{name: "Bob", age: 5}) == %Test{
                name: "Bob",
                age: 5,
                height: 190,
