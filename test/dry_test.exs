@@ -47,9 +47,11 @@ defmodule DryTest do
 
     context "when non-optional attribute is missing" do
       it "raises an exception" do
-        assert_raise Dry.RuntimeError, "[Elixir.DryTest.Test] - Required attribute :name is missing", fn ->
-          Test.new!(%{})
-        end
+        assert_raise Dry.RuntimeError,
+                     "[Elixir.DryTest.Test] - Required attribute :name is missing",
+                     fn ->
+                       Test.new!(%{})
+                     end
       end
     end
 

@@ -15,19 +15,22 @@ defmodule Dry.ProcessorTest do
       type: :integer,
       value: 5,
       invalid_value: 5.5,
-      error: "[Elixir.Dry.RuntimeError] - `5.5` has invalid type for :name. Expected type is integer"
+      error:
+        "[Elixir.Dry.RuntimeError] - `5.5` has invalid type for :name. Expected type is integer"
     },
     %{
       type: :float,
       value: 10.5,
       invalid_value: "bob",
-      error: "[Elixir.Dry.RuntimeError] - `\"bob\"` has invalid type for :name. Expected type is float"
+      error:
+        "[Elixir.Dry.RuntimeError] - `\"bob\"` has invalid type for :name. Expected type is float"
     },
     %{
       type: :bool,
       value: true,
       invalid_value: %{age: 15},
-      error: "[Elixir.Dry.RuntimeError] - `%{age: 15}` has invalid type for :name. Expected type is bool"
+      error:
+        "[Elixir.Dry.RuntimeError] - `%{age: 15}` has invalid type for :name. Expected type is bool"
     },
     %{
       type: :atom,
