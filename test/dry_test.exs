@@ -3,6 +3,14 @@ defmodule DryTest do
 
   doctest Dry
 
+  defmodule Parent do
+    use Dry
+
+    schema do
+      attribute(:name)
+    end
+  end
+
   defmodule Test do
     use Dry
 
@@ -11,6 +19,8 @@ defmodule DryTest do
       attribute(:age, :integer, optional: true)
       attribute(:height, default: 190)
       attribute(:country, :string, default: "UK")
+      attribute(:siblings, array_of: :string, default: ["Bob", "Mark"])
+      attribute(:parents, array_of: Parent, optional: true)
 
       attribute :is_adult do
         (entity.age || 0) >= 18
@@ -24,11 +34,20 @@ defmodule DryTest do
 
   describe "#new!" do
     it "generates the correct struct" do
-      assert Test.new!(%{name: "Rob", age: 18, height: 169, country: "BG"}) == %Test{
+      assert Test.new!(%{
+               name: "Rob",
+               age: 18,
+               height: 169,
+               country: "BG",
+               siblings: ["John", "Bob"],
+               parents: [%{name: "Mark"}]
+             }) == %Test{
                name: "Rob",
                age: 18,
                height: 169,
                is_adult: true,
+               siblings: ["John", "Bob"],
+               parents: [%Parent{name: "Mark"}],
                tall: false,
                country: "BG"
              }
@@ -40,6 +59,7 @@ defmodule DryTest do
                age: 5,
                height: 190,
                is_adult: false,
+               siblings: ["Bob", "Mark"],
                country: "UK",
                tall: true
              }
@@ -48,9 +68,37 @@ defmodule DryTest do
     context "when non-optional attribute is missing" do
       it "raises an exception" do
         assert_raise Dry.RuntimeError,
-                     "[Elixir.DryTest.Test] - Required attribute :name is missing",
+                     "[DryTest.Test] - Required attribute :name is missing",
                      fn ->
                        Test.new!(%{})
+                     end
+      end
+    end
+
+    context "when a list attribute has the wrong type" do
+      it "raises an exception" do
+        assert_raise Dry.RuntimeError,
+                     "[DryTest.Test] - `1` has invalid type for :siblings. Expected type is :string",
+                     fn ->
+                       Test.new!(%{name: "Bob", age: 5, siblings: ["bob", 1]})
+                     end
+
+        assert_raise Dry.RuntimeError,
+                     "[DryTest.Test] - `\"Bob\"` has invalid type for :parents. Expected type is [array_of: DryTest.Parent]",
+                     fn ->
+                       Test.new!(%{name: "Bob", age: 5, parents: "Bob"})
+                     end
+
+        assert_raise Dry.RuntimeError,
+                     "[DryTest.Test] - `\"Bob\"` has invalid type for :parents. Expected type is DryTest.Parent",
+                     fn ->
+                       Test.new!(%{name: "Bob", age: 5, parents: ["Bob"]})
+                     end
+
+        assert_raise Dry.RuntimeError,
+                     "[DryTest.Test] - `1` has invalid type for :siblings. Expected type is [array_of: :string]",
+                     fn ->
+                       Test.new!(%{name: "Bob", age: 5, siblings: 1})
                      end
       end
     end
@@ -63,6 +111,7 @@ defmodule DryTest do
                  height: 190,
                  is_adult: false,
                  country: "UK",
+                 siblings: ["Bob", "Mark"],
                  tall: true
                }
       end
@@ -79,6 +128,7 @@ defmodule DryTest do
                  age: 18,
                  height: 169,
                  is_adult: true,
+                 siblings: ["Bob", "Mark"],
                  tall: false,
                  country: "BG"
                }
@@ -88,8 +138,14 @@ defmodule DryTest do
     context "when an error occurs" do
       it "returns an error tuple" do
         {:error, error} = Test.new(%{})
-        assert error == "[Elixir.DryTest.Test] - Required attribute :name is missing"
+        assert error == "[DryTest.Test] - Required attribute :name is missing"
       end
+    end
+  end
+
+  describe "__dry__" do
+    it "returns true" do
+      assert Test.__dry__() == true
     end
   end
 end

@@ -7,13 +7,20 @@ defmodule Dry.Processor do
 
   def process([name, type, opts], attr, module) do
     default = Keyword.get(opts, :default, :__dry_undefined__)
+    array = Keyword.get(opts, :array_of, nil)
     optional = Keyword.get(opts, :optional, false)
     value = Map.get(attr, name)
-    process(name, type, value, default, optional, module)
+
+    if array do
+      process(name, [array_of: array], value, default, optional, module)
+    else
+      process(name, type, value, default, optional, module)
+    end
   end
 
   def process(name, _type, _value = nil, _default = :__dry_undefined__, _optional = false, module) do
-    raise Dry.RuntimeError, message: "[#{module}] - Required attribute :#{name} is missing"
+    raise Dry.RuntimeError,
+      message: "[#{inspect(module)}] - Required attribute :#{name} is missing"
   end
 
   def process(name, _type, value = nil, _default = :__dry_undefined__, _optional = true, _module) do
@@ -26,6 +33,14 @@ defmodule Dry.Processor do
 
   def process(name, _type = nil, value, _default, _optional, _module) do
     {name, value}
+  end
+
+  def process(name, [array_of: type], value, default, optional, module) when is_list(value) do
+    {name,
+     Enum.map(value, fn x ->
+       {_name, value} = process(name, type, x, default, optional, module)
+       value
+     end)}
   end
 
   def process(name, :string, value, _default, _optional, _module) when is_binary(value) do
@@ -52,6 +67,26 @@ defmodule Dry.Processor do
     {name, value}
   end
 
+  def process(name, type, value, _default, _optional, module) when is_map(value) do
+    if Kernel.function_exported?(type, :__dry__, 0) do
+      try do
+        {name, type.new!(value)}
+      rescue
+        e in Dry.RuntimeError ->
+          reraise Dry.RuntimeError,
+                  [
+                    message:
+                      "[#{inspect(module)}] - Failed to initialise #{inspect(type)} with #{
+                        inspect(value)
+                      } for #{inspect(name)}. Original error - #{e.message}"
+                  ],
+                  __STACKTRACE__
+      end
+    else
+      invalid(name, type, value, module)
+    end
+  end
+
   def process(name, type, value, _default, _optional, module) when is_struct(value) do
     if value.__struct__ == type do
       {name, value}
@@ -67,7 +102,9 @@ defmodule Dry.Processor do
   defp invalid(name, type, value, module) do
     raise Dry.RuntimeError,
       message:
-        "[#{module}] - `#{inspect(value)}` has invalid type for :#{name}. Expected type is #{type}"
+        "[#{inspect(module)}] - `#{inspect(value)}` has invalid type for :#{name}. Expected type is #{
+          inspect(type)
+        }"
   end
 
   def function?(attribute) do

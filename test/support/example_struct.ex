@@ -1,4 +1,4 @@
-defmodule Dashboard.ExampleStruct do
+defmodule Dry.ExampleStruct do
   @moduledoc false
 
   use Dry

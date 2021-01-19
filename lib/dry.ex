@@ -2,36 +2,48 @@ defmodule Dry do
   @moduledoc """
   Allow for creating structs, with fields of certain type, default value, custom function and more.
   ## Example:
-  ```
-  iex> defmodule User do
-  ...>   use Dry
-  ...>
-  ...>   schema do
-  ...>     attribute(:name, :string)
-  ...>     attribute(:age, :integer, optional: true)
-  ...>     attribute(:height)
-  ...>     attribute(:country, :string, default: "UK")
-  ...>
-  ...>     attribute :is_adult do
-  ...>       Map.get(entity, :age, 0) >= 18
-  ...>     end
-  ...>
-  ...>     attribute :tall do
-  ...>       Map.get(entity, :height, 0) > 180
-  ...>     end
-  ...>   end
-  ...> end
-  ...> _user = User.new!(%{name: "Rob", age: 18, height: 169, country: "BG"})
-  ...># %User{
-  ...>#   age: 18,
-  ...>#   country: "BG",
-  ...>#   height: 169,
-  ...>#   is_adult: true,
-  ...>#   name: "Rob",
-  ...>#   tall: false
-  ...># }
-  ...> {:ok, _user} = User.new(%{name: "Rob", age: 18, height: 169, country: "BG"})
-  ```
+  ```elixir
+  defmodule Sibling do
+    use Dry
+
+    schema do
+      attribute(:name, :string)
+    end
+  end
+
+  defmodule User do
+    use Dry
+
+    schema do
+        attribute(:name, :string)
+        attribute(:age, :integer, optional: true)
+        attribute(:height)
+        attribute(:country, :string, default: "UK")
+        attribute(:siblings, array_of: Sibling)
+        attribute(:favourite_colours, array_of: :string, default: ["blue", "green"])
+
+        attribute :is_adult do
+          Map.get(entity, :age, 0) >= 18
+        end
+
+        attribute :tall do
+          Map.get(entity, :height, 0) >= 180
+        end
+    end
+  end
+
+  user = User.new!(%{name: "Rob", age: 18, height: 169, country: "BG", siblings: [%{name: "John"}]})
+  user == %User{
+    age: 18,
+    country: "BG",
+    height: 169,
+    is_adult: true,
+    name: "Rob",
+    tall: false,
+    siblings: [%Sibling{name: "John"}],
+    favourite_colours: ["blue", "green"]
+  }
+  {:ok, _user} = User.new(%{name: "Rob", age: 18, height: 169, country: "BG", siblings: [%{name: "John"}]})  ```
   """
 
   defmacro __using__(_) do
@@ -87,6 +99,9 @@ defmodule Dry do
             e in Dry.RuntimeError -> {:error, e.message}
           end
         end
+
+        @doc "Used to recognise Dry modules"
+        def __dry__(), do: true
       end
 
     quote do
