@@ -11,4 +11,18 @@ defmodule Dry.Types.IntegerTest do
       assert Types.Integer.options() == %Types.Integer{}
     end
   end
+
+  describe "#valid?" do
+    context "when value is integer" do
+      it "returns true" do
+        assert Types.Integer.valid?(5) == true
+      end
+    end
+
+    context "when value is not an integer" do
+      it "returns false" do
+        assert Types.Integer.valid?("bob") == false
+      end
+    end
+  end
 end

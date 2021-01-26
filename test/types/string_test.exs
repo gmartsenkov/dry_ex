@@ -11,4 +11,18 @@ defmodule Dry.Types.StringTest do
       assert Types.String.options() == %Types.String{}
     end
   end
+
+  describe "#valid?" do
+    context "when value is string" do
+      it "returns true" do
+        assert Types.String.valid?("bob") == true
+      end
+    end
+
+    context "when value is not a string" do
+      it "returns false" do
+        assert Types.String.valid?(5) == false
+      end
+    end
+  end
 end

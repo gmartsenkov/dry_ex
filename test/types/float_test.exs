@@ -11,4 +11,18 @@ defmodule Dry.Types.FloatTest do
       assert Types.Float.options() == %Types.Float{}
     end
   end
+
+  describe "#valid?" do
+    context "when value is float" do
+      it "returns true" do
+        assert Types.Float.valid?(5.5) == true
+      end
+    end
+
+    context "when value is not a float" do
+      it "returns false" do
+        assert Types.Float.valid?(5) == false
+      end
+    end
+  end
 end
