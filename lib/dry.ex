@@ -70,6 +70,7 @@ defmodule Dry do
       quote unquote: false do
         @attributes
         |> Enum.map(fn attr -> Enum.at(attr, 0) end)
+        |> Enum.concat([__dry__: true])
         |> Kernel.defstruct()
 
         def __attributes__(), do: @attributes
