@@ -8,21 +8,25 @@ Dry tries to provide a nice DSL for building complex data structures, without ha
 defmodule Sibling do
   use Dry
 
+  alias Dry.Types
+
   schema do
-    attribute(:name, :string)
+    attribute(:name, Types.String)
   end
 end
 
 defmodule User do
   use Dry
 
+  alias Dry.Types
+
   schema do
-    attribute(:name, :string)
-    attribute(:age, :integer, optional: true)
+    attribute(:name, Types.String)
+    attribute(:age, Types.Integer.options(optional: true))
     attribute(:height)
-    attribute(:country, :string, default: "UK")
-    attribute(:siblings, array_of: Sibling)
-    attribute(:favourite_colours, array_of: :string, default: ["blue", "green"])
+    attribute(:country, Types.String.options(default: "UK"))
+    attribute(:siblings, Types.Array.options(type: Sibling))
+    attribute(:favourite_colours, Types.Array.options(type: Types.String, default: ["blue", "green"]))
 
     attribute :is_adult do
       Map.get(entity, :age, 0) >= 18
@@ -45,7 +49,7 @@ user == %User{
   siblings: [%Sibling{name: "John"}],
   favourite_colours: ["blue", "green"]
 }
-{:ok, _user} = User.new(%{name: "Rob", age: 18, height: 169, country: "BG", siblings: [%{name: "John"}]})
+{:ok, _user} = User.new(%{name: "Rob", age: 18, height: 169, country: "BG", siblings: [%{name: "John"}]})  ```
 ```
 
 ## Installation
@@ -56,7 +60,7 @@ by adding `dry` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:dry,  0.1.0"}
+    {:dry,  0.1.1"}
   ]
 end
 ```

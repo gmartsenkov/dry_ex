@@ -5,22 +5,24 @@ defmodule Dry do
   ```elixir
   defmodule Sibling do
     use Dry
+    alias Dry.Types
 
     schema do
-      attribute(:name, :string)
+      attribute(:name, Types.String)
     end
   end
 
   defmodule User do
     use Dry
+    alias Dry.Types
 
     schema do
-        attribute(:name, :string)
-        attribute(:age, :integer, optional: true)
+        attribute(:name, Types.String)
+        attribute(:age, Types.Integer.options(optional: true))
         attribute(:height)
-        attribute(:country, :string, default: "UK")
-        attribute(:siblings, array_of: Sibling)
-        attribute(:favourite_colours, array_of: :string, default: ["blue", "green"])
+        attribute(:country, Types.String.options(default: "UK"))
+        attribute(:siblings, Types.Array.options(type: Sibling))
+        attribute(:favourite_colours, Types.Array.options(type: Types.String, default: ["blue", "green"]))
 
         attribute :is_adult do
           Map.get(entity, :age, 0) >= 18
@@ -100,6 +102,9 @@ defmodule Dry do
           end
         end
 
+        def valid?(%{__struct__: __MODULE__} = value) when is_struct(value), do: true
+        def valid?(_value), do: false
+
         @doc "Used to recognise Dry modules"
         def __dry__(), do: true
       end
@@ -112,7 +117,7 @@ defmodule Dry do
 
   defmacro attribute(name) do
     quote do
-      attribute(unquote(name), nil, [])
+      attribute(unquote(name), nil)
     end
   end
 
@@ -129,21 +134,9 @@ defmodule Dry do
     end
   end
 
-  defmacro attribute(name, opts) when is_list(opts) do
-    quote do
-      attribute(unquote(name), nil, unquote(opts))
-    end
-  end
-
   defmacro attribute(name, type) do
     quote do
-      attribute(unquote(name), unquote(type), [])
-    end
-  end
-
-  defmacro attribute(name, [] = type, _opts) do
-    quote do
-      attribute(unquote(name), nil, unquote(type))
+      Module.put_attribute(__MODULE__, :attributes, [unquote(name), unquote(type)])
     end
   end
 

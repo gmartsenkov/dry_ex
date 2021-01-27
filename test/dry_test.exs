@@ -13,14 +13,15 @@ defmodule DryTest do
 
   defmodule Test do
     use Dry
+    alias Dry.Types
 
     schema do
-      attribute(:name, :string)
-      attribute(:age, :integer, optional: true)
-      attribute(:height, default: 190)
-      attribute(:country, :string, default: "UK")
-      attribute(:siblings, array_of: :string, default: ["Bob", "Mark"])
-      attribute(:parents, array_of: Parent, optional: true)
+      attribute(:name, Types.String)
+      attribute(:age, Types.Integer.options(optional: true))
+      attribute(:height, Types.Integer.options(default: 190))
+      attribute(:country, Types.String.options(default: "UK"))
+      attribute(:siblings, Types.Array.options(type: Types.String, default: ["Bob", "Mark"]))
+      attribute(:parents, Types.Array.options(type: Parent, optional: true))
 
       attribute :is_adult do
         (entity.age || 0) >= 18
@@ -78,13 +79,13 @@ defmodule DryTest do
     context "when a list attribute has the wrong type" do
       it "raises an exception" do
         assert_raise Dry.RuntimeError,
-                     "[DryTest.Test] - `1` has invalid type for :siblings. Expected type is :string",
+                     "[DryTest.Test] - `1` has invalid type for :siblings. Expected type is Dry.Types.String",
                      fn ->
                        Test.new!(%{name: "Bob", age: 5, siblings: ["bob", 1]})
                      end
 
         assert_raise Dry.RuntimeError,
-                     "[DryTest.Test] - `\"Bob\"` has invalid type for :parents. Expected type is [array_of: DryTest.Parent]",
+                     "[DryTest.Test] - `\"Bob\"` has invalid type for :parents. Expected type is DryTest.Parent",
                      fn ->
                        Test.new!(%{name: "Bob", age: 5, parents: "Bob"})
                      end
@@ -96,7 +97,7 @@ defmodule DryTest do
                      end
 
         assert_raise Dry.RuntimeError,
-                     "[DryTest.Test] - `1` has invalid type for :siblings. Expected type is [array_of: :string]",
+                     "[DryTest.Test] - `1` has invalid type for :siblings. Expected type is Dry.Types.String",
                      fn ->
                        Test.new!(%{name: "Bob", age: 5, siblings: 1})
                      end
