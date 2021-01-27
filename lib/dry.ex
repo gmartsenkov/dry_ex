@@ -113,7 +113,7 @@ defmodule Dry do
       unquote(prelude)
       unquote(postlude)
     end
-   end
+  end
 
   defmacro attribute(name) do
     quote do

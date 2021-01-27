@@ -32,8 +32,10 @@ defmodule Dry.Processor do
     case Types.Array.valid_list?(type, converted) do
       true ->
         {name, converted}
+
       false ->
         invalid(name, type, value, module)
+
       {:error, problem_value} ->
         invalid(name, type, problem_value, module)
     end
@@ -61,9 +63,13 @@ defmodule Dry.Processor do
     case type.new(value) do
       {:ok, value} ->
         {name, value}
+
       {:error, message} ->
         raise Dry.RuntimeError,
-          message: "[#{inspect(module)}] - An error occured when trying to initialize #{inspect(type)} with #{inspect(value)} for #{inspect(name)}. Original error: #{message}"
+          message:
+            "[#{inspect(module)}] - An error occured when trying to initialize #{inspect(type)} with #{
+              inspect(value)
+            } for #{inspect(name)}. Original error: #{message}"
     end
   end
 

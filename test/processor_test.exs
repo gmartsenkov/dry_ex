@@ -28,8 +28,7 @@ defmodule Dry.ProcessorTest do
       type: Types.Bool,
       value: true,
       invalid_value: %{age: 15},
-      error:
-        "[Test] - `%{age: 15}` has invalid type for :name. Expected type is Dry.Types.Bool"
+      error: "[Test] - `%{age: 15}` has invalid type for :name. Expected type is Dry.Types.Bool"
     },
     %{
       type: Types.Atom,
@@ -47,8 +46,7 @@ defmodule Dry.ProcessorTest do
       type: ExampleStruct,
       value: %ExampleStruct{name: "Bob"},
       invalid_value: 5,
-      error:
-        "[Test] - `5` has invalid type for :name. Expected type is Dry.ExampleStruct"
+      error: "[Test] - `5` has invalid type for :name. Expected type is Dry.ExampleStruct"
     },
     %{
       type: ExampleStruct,

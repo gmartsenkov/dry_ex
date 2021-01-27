@@ -5,7 +5,11 @@ defmodule Dry.Types.ArrayTest do
 
   describe "#options" do
     it "returns the correct struct" do
-      assert Types.Array.options(default: :array, optional: true) == %Types.Array{optional: true, default: :array}
+      assert Types.Array.options(default: :array, optional: true) == %Types.Array{
+               optional: true,
+               default: :array
+             }
+
       assert Types.Array.options(default: :array) == %Types.Array{default: :array}
       assert Types.Array.options(type: Types.Array) == %Types.Array{type: Types.Array}
       assert Types.Array.options(invalid: :array) == %Types.Array{}
