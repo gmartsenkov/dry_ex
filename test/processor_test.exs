@@ -3,51 +3,52 @@ defmodule Dry.ProcessorTest do
 
   import Dry.Processor
   alias Dry.ExampleStruct
+  alias Dry.Types
 
   @test_types [
     %{
-      type: :string,
+      type: Types.String,
       value: "bob",
       invalid_value: 5,
-      error: "[Dry.RuntimeError] - `5` has invalid type for :name. Expected type is :string"
+      error: "[Test] - `5` has invalid type for :name. Expected type is Dry.Types.String"
     },
     %{
-      type: :integer,
+      type: Types.Integer,
       value: 5,
       invalid_value: 5.5,
-      error: "[Dry.RuntimeError] - `5.5` has invalid type for :name. Expected type is :integer"
+      error: "[Test] - `5.5` has invalid type for :name. Expected type is Dry.Types.Integer"
     },
     %{
-      type: :float,
+      type: Types.Float,
       value: 10.5,
       invalid_value: "bob",
-      error: "[Dry.RuntimeError] - `\"bob\"` has invalid type for :name. Expected type is :float"
+      error: "[Test] - `\"bob\"` has invalid type for :name. Expected type is Dry.Types.Float"
     },
     %{
-      type: :bool,
+      type: Types.Bool,
       value: true,
       invalid_value: %{age: 15},
       error:
-        "[Dry.RuntimeError] - `%{age: 15}` has invalid type for :name. Expected type is :bool"
+        "[Test] - `%{age: 15}` has invalid type for :name. Expected type is Dry.Types.Bool"
     },
     %{
-      type: :atom,
+      type: Types.Atom,
       value: :dog,
       invalid_value: 100,
-      error: "[Dry.RuntimeError] - `100` has invalid type for :name. Expected type is :atom"
+      error: "[Test] - `100` has invalid type for :name. Expected type is Dry.Types.Atom"
     },
     %{
-      type: :map,
+      type: Types.Map,
       value: %{name: "Bob"},
       invalid_value: 100,
-      error: "[Dry.RuntimeError] - `100` has invalid type for :name. Expected type is :map"
+      error: "[Test] - `100` has invalid type for :name. Expected type is Dry.Types.Map"
     },
     %{
       type: ExampleStruct,
       value: %ExampleStruct{name: "Bob"},
       invalid_value: 5,
       error:
-        "[Dry.RuntimeError] - `5` has invalid type for :name. Expected type is Dry.ExampleStruct"
+        "[Test] - `5` has invalid type for :name. Expected type is Dry.ExampleStruct"
     },
     %{
       type: ExampleStruct,
@@ -55,7 +56,15 @@ defmodule Dry.ProcessorTest do
       expected_value: %ExampleStruct{name: "Bob"},
       invalid_value: %{name: 1},
       error:
-        "[Dry.RuntimeError] - Failed to initialise Dry.ExampleStruct with %{name: 1} for :name. Original error - [Dry.ExampleStruct] - `1` has invalid type for :name. Expected type is :string"
+        "[Test] - An error occured when trying to initialize Dry.ExampleStruct with %{name: 1} for :name. Original error: [Dry.ExampleStruct] - `1` has invalid type for :name. Expected type is Dry.Types.String"
+    },
+    %{
+      type: Types.Array.options(type: ExampleStruct),
+      value: [%{name: "Bob"}],
+      expected_value: [%ExampleStruct{name: "Bob"}],
+      invalid_value: [%{name: 1}],
+      error:
+        "[Test] - An error occured when trying to initialize Dry.ExampleStruct with %{name: 1} for :name. Original error: [Dry.ExampleStruct] - `1` has invalid type for :name. Expected type is Dry.Types.String"
     }
   ]
 
@@ -63,11 +72,11 @@ defmodule Dry.ProcessorTest do
     context "types" do
       it "works as expected" do
         Enum.each(@test_types, fn test ->
-          assert process(:name, test.type, test.value, nil, nil, nil) ==
+          assert process(:name, test.type, test.value, Test) ==
                    {:name, Map.get(test, :expected_value, test.value)}
 
           assert_raise Dry.RuntimeError, test.error, fn ->
-            process(:name, test.type, test.invalid_value, nil, nil, Dry.RuntimeError)
+            process(:name, test.type, test.invalid_value, Test)
           end
         end)
       end

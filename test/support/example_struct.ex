@@ -4,6 +4,6 @@ defmodule Dry.ExampleStruct do
   use Dry
 
   schema do
-    attribute(:name, :string)
+    attribute(:name, Dry.Types.String)
   end
 end
