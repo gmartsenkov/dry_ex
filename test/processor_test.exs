@@ -65,17 +65,21 @@ defmodule Dry.ProcessorTest do
         "[Test] - An error occured when trying to initialize Dry.ExampleStruct with %{name: 1} for :name. Original error: [Dry.ExampleStruct] - `1` has invalid type for :name. Expected type is Dry.Types.String"
     },
     %{
+      type: Types.Array,
+      value: [1, 2, 3]
+    },
+    %{
       type: ExampleStruct.options(optional: true),
       value: %{name: "Bob"},
-      expected_value: %ExampleStruct{name: "Bob"},
+      expected_value: %ExampleStruct{name: "Bob"}
     },
     %{
       type: ExampleStruct.options(optional: true),
-      value: %ExampleStruct{name: "Bob"},
+      value: %ExampleStruct{name: "Bob"}
     },
     %{
       type: ExampleStruct.options(optional: true),
-      value: nil,
+      value: nil
     },
     %{
       type: ExampleStruct.options(default: %ExampleStruct{name: "John"}),
