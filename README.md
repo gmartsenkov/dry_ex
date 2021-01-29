@@ -64,7 +64,7 @@ by adding `dry` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:dry,  0.1.1"}
+    {:dry,  0.1.2"}
   ]
 end
 ```
