@@ -63,6 +63,24 @@ defmodule Dry.ProcessorTest do
       invalid_value: [%{name: 1}],
       error:
         "[Test] - An error occured when trying to initialize Dry.ExampleStruct with %{name: 1} for :name. Original error: [Dry.ExampleStruct] - `1` has invalid type for :name. Expected type is Dry.Types.String"
+    },
+    %{
+      type: ExampleStruct.options(optional: true),
+      value: %{name: "Bob"},
+      expected_value: %ExampleStruct{name: "Bob"},
+    },
+    %{
+      type: ExampleStruct.options(optional: true),
+      value: %ExampleStruct{name: "Bob"},
+    },
+    %{
+      type: ExampleStruct.options(optional: true),
+      value: nil,
+    },
+    %{
+      type: ExampleStruct.options(default: %ExampleStruct{name: "John"}),
+      value: nil,
+      expected_value: %ExampleStruct{name: "John"}
     }
   ]
 
@@ -73,8 +91,10 @@ defmodule Dry.ProcessorTest do
           assert process(:name, test.type, test.value, Test) ==
                    {:name, Map.get(test, :expected_value, test.value)}
 
-          assert_raise Dry.RuntimeError, test.error, fn ->
-            process(:name, test.type, test.invalid_value, Test)
+          if Map.get(test, :error) do
+            assert_raise Dry.RuntimeError, test.error, fn ->
+              process(:name, test.type, test.invalid_value, Test)
+            end
           end
         end)
       end

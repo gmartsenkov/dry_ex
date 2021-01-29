@@ -26,6 +26,13 @@ defmodule Dry.Processor do
       message: "[#{inspect(module)}] - Required attribute :#{name} is missing"
   end
 
+  def process(name, %Types.Struct{type: type}, value, module) do
+    Code.ensure_loaded(type)
+    functions = type.__info__(:functions) |> Enum.into(%{})
+
+    process_advanced(name, type, functions, value, module)
+  end
+
   def process(name, %Types.Array{type: type}, value, module) do
     converted = convert_list(name, type, value, module)
 

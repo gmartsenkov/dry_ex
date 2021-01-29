@@ -24,6 +24,8 @@ defmodule User do
     attribute(:name, Types.String)
     attribute(:age, Types.Integer.options(optional: true))
     attribute(:height)
+    attribute(:brother, Sibling.options(optional: true))
+    attribute(:sister, Sibling.options(default: %Sibling{name: "Karen"}))
     attribute(:country, Types.String.options(default: "UK"))
     attribute(:siblings, Types.Array.options(type: Sibling))
     attribute(:favourite_colours, Types.Array.options(type: Types.String, default: ["blue", "green"]))
@@ -45,6 +47,8 @@ user == %User{
   height: 169,
   is_adult: true,
   name: "Rob",
+  brother: nil,
+  sister: %Sibling{name: "Karen"},
   tall: false,
   siblings: [%Sibling{name: "John"}],
   favourite_colours: ["blue", "green"]

@@ -56,6 +56,7 @@ defmodule Dry do
     end
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro schema(do: block) do
     prelude =
       quote do
@@ -104,6 +105,12 @@ defmodule Dry do
 
         def valid?(%{__struct__: __MODULE__} = value) when is_struct(value), do: true
         def valid?(_value), do: false
+
+        def options(opts \\ []) do
+          opts
+          |> Keyword.put(:type, __MODULE__)
+          |> Dry.Types.Struct.options()
+        end
 
         @doc "Used to recognise Dry modules"
         def __dry__(), do: true
