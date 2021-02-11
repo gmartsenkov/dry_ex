@@ -155,7 +155,7 @@ defmodule Dry do
 
   defmacro attribute?(name) do
     quote do
-      attribute(unquote(name), nil)
+      attribute?(unquote(name), nil)
     end
   end
 
