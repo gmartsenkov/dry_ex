@@ -77,6 +77,8 @@ defmodule Dry do
 
         def __attributes__(), do: @attributes
 
+        def new!(), do: new!([])
+
         def new!(attr) when is_list(attr) do
           attr
           |> Enum.into(%{})
@@ -99,6 +101,14 @@ defmodule Dry do
             |> Enum.into(attr)
 
           struct(__MODULE__, processed)
+        end
+
+        def new(), do: new([])
+
+        def new(attr) when is_list(attr) do
+          attr
+          |> Enum.into(%{})
+          |> new()
         end
 
         def new(attr) do
