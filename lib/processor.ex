@@ -7,6 +7,12 @@ defmodule Dry.Processor do
     {name, apply(module, name, [attr])}
   end
 
+  def process([name, type, :optional], attr, module) do
+    value = Map.get(attr, name)
+
+    if is_nil(value), do: {name, value}, else: process([name, type], attr, module)
+  end
+
   def process([name, type], attr, module) do
     value = Map.get(attr, name)
 

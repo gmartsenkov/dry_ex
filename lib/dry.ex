@@ -147,6 +147,18 @@ defmodule Dry do
     end
   end
 
+  defmacro attribute?(name) do
+    quote do
+      attribute(unquote(name), nil)
+    end
+  end
+
+  defmacro attribute?(name, type) do
+    quote do
+      Module.put_attribute(__MODULE__, :attributes, [unquote(name), unquote(type), :optional])
+    end
+   end
+
   @doc """
   Macro to define attribute withing a Dry schema
   Examples:
@@ -160,5 +172,15 @@ defmodule Dry do
       attribute = [unquote(name), unquote(type), unquote(opts)]
       Module.put_attribute(__MODULE__, :attributes, attribute)
     end
+  end
+
+  def map_to(nil, _struct), do: nil
+
+  def map_to(value, struct) when is_list(value) do
+    Enum.map(value, fn v -> struct.new!(v) end)
+  end
+
+  def map_to(value, struct) do
+    struct.new!(value)
   end
 end

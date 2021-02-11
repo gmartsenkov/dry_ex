@@ -1,3 +1,7 @@
+defmodule AnotherStruct do
+  defstruct [:name]
+end
+
 defmodule Dry.ProcessorTest do
   use ExSpec, async: true
 
@@ -47,6 +51,11 @@ defmodule Dry.ProcessorTest do
       value: %ExampleStruct{name: "Bob"},
       invalid_value: 5,
       error: "[Test] - `5` has invalid type for :name. Expected type is Dry.ExampleStruct"
+    },
+    %{
+      type: ExampleStruct,
+      value: %AnotherStruct{name: "Bob"},
+      expected_value: %ExampleStruct{name: "Bob"},
     },
     %{
       type: ExampleStruct,
