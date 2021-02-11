@@ -163,7 +163,7 @@ defmodule Dry do
     quote do
       Module.put_attribute(__MODULE__, :attributes, [unquote(name), unquote(type), :optional])
     end
-   end
+  end
 
   @doc """
   Macro to define attribute withing a Dry schema

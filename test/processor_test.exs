@@ -55,7 +55,7 @@ defmodule Dry.ProcessorTest do
     %{
       type: ExampleStruct,
       value: %AnotherStruct{name: "Bob"},
-      expected_value: %ExampleStruct{name: "Bob"},
+      expected_value: %ExampleStruct{name: "Bob"}
     },
     %{
       type: ExampleStruct,
