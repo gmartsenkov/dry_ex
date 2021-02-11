@@ -7,10 +7,18 @@ defmodule Dry.Processor do
     {name, apply(module, name, [attr])}
   end
 
-  def process([name, type, :optional], attr, module) do
-    value = Map.get(attr, name)
+  def process([name, type, :optional], attr, module) when is_struct(type) do
+    type = Map.put(type, :optional, true)
 
-    if is_nil(value), do: {name, value}, else: process([name, type], attr, module)
+    process([name, type], attr, module)
+  end
+
+  def process([name, type, :optional], attr, module) when is_nil(type) do
+    process([name, %Types.Any{optional: true}], attr, module)
+  end
+
+  def process([name, type, :optional], attr, module) do
+    process([name, struct(type, %{optional: true})], attr, module)
   end
 
   def process([name, type], attr, module) do
