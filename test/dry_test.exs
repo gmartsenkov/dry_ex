@@ -66,6 +66,18 @@ defmodule DryTest do
              }
     end
 
+    it "works with a keyword list" do
+      assert Test.new!(name: "Bob", age: 5) == %Test{
+               name: "Bob",
+               age: 5,
+               height: 190,
+               is_adult: false,
+               siblings: ["Bob", "Mark"],
+               country: "UK",
+               tall: true
+             }
+    end
+
     context "when non-optional attribute is missing" do
       it "raises an exception" do
         assert_raise Dry.RuntimeError,
@@ -123,6 +135,20 @@ defmodule DryTest do
     context "when no error occurs" do
       it "returns an ok tuple" do
         {:ok, result} = Test.new(%{name: "Rob", age: 18, height: 169, country: "BG"})
+
+        assert result == %Test{
+                 name: "Rob",
+                 age: 18,
+                 height: 169,
+                 is_adult: true,
+                 siblings: ["Bob", "Mark"],
+                 tall: false,
+                 country: "BG"
+               }
+      end
+
+      it "works with a keyword list" do
+        {:ok, result} = Test.new(name: "Rob", age: 18, height: 169, country: "BG")
 
         assert result == %Test{
                  name: "Rob",

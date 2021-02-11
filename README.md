@@ -40,7 +40,7 @@ defmodule User do
   end
 end
 
-user = User.new!(%{name: "Rob", age: 18, height: 169, country: "BG", siblings: [%{name: "John"}]})
+user = User.new!(name: "Rob", age: 18, height: 169, country: "BG", siblings: [%{name: "John"}])
 user == %User{
   age: 18,
   country: "BG",

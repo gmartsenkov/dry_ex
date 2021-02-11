@@ -77,7 +77,13 @@ defmodule Dry do
 
         def __attributes__(), do: @attributes
 
-        def new!(attr) do
+        def new!(attr) when is_list(attr) do
+          attr
+          |> Enum.into(%{})
+          |> new!()
+        end
+
+        def new!(attr) when is_map(attr) do
           attr =
             __attributes__()
             |> Enum.reverse()
