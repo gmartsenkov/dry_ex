@@ -18,7 +18,7 @@ defmodule Dry.Processor do
   end
 
   def process([name, type, :optional], attr, module) do
-    process([name, struct(type, %{optional: true})], attr, module)
+    process([name, %Types.Struct{type: type, optional: true}], attr, module)
   end
 
   def process([name, type], attr, module) do

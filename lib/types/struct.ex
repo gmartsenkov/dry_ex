@@ -6,6 +6,7 @@ defmodule Dry.Types.Struct do
   ```elixir
   schema do
     ttribute :field_1, Types.Struct
+    attribute :field_2, Types.Struct.options(type: AnotherDryStruct)
     attribute :field_2, Types.Struct.options(optional: true)
     attribute :field_2, Types.Struct.options(default: %Struct{a: 1})
   end

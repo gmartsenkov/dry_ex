@@ -20,6 +20,7 @@ defmodule DryTest do
       attribute(:age, Types.Integer.options(optional: true))
       attribute(:height, Types.Integer.options(default: 190))
       attribute(:country, Types.String.options(default: "UK"))
+      attribute?(:father, Parent)
       attribute(:siblings, Types.Array.options(type: Types.String, default: ["Bob", "Mark"]))
       attribute(:parents, Types.Array.options(type: Parent, optional: true))
 
@@ -46,6 +47,7 @@ defmodule DryTest do
                name: "Rob",
                age: 18,
                height: 169,
+               father: nil,
                is_adult: true,
                siblings: ["John", "Bob"],
                parents: [%Parent{name: "Mark"}],
