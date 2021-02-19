@@ -32,11 +32,13 @@ defmodule Dry.Processor do
   end
 
   if Code.ensure_loaded?(Ecto.Association.NotLoaded) do
-    def process(name, %{optional: true} = type, %Ecto.Association.NotLoaded{} = _value, _module) when is_struct(type) do
+    def process(name, %{optional: true} = type, %Ecto.Association.NotLoaded{} = _value, _module)
+        when is_struct(type) do
       {name, nil}
     end
 
-    def process(name, %{default: default} = type, %Ecto.Association.NotLoaded{} = _value, _module) when is_struct(type) do
+    def process(name, %{default: default} = type, %Ecto.Association.NotLoaded{} = _value, _module)
+        when is_struct(type) do
       {name, default}
     end
   end
