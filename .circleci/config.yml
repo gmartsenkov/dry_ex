@@ -8,10 +8,6 @@ jobs:
       - image: circleci/elixir:1.11.2
         environment:
           MIX_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: dry_test
 
     working_directory: ~/dry
     steps:
